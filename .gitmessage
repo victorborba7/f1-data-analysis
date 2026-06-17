@@ -1,0 +1,20 @@
+# <type>(<scope>): <subject>        # ≤100 chars, imperative ("add", not "added")
+#
+# <body: what changed and why; wrap at ~72 columns>
+#
+# <footer: BREAKING CHANGE: ... | Refs #issue>
+#
+# ── Types ──────────────────────────────────────────────
+# feat     new analysis / chart / capability
+# fix      bug fix
+# docs     documentation only
+# style    formatting, no code change
+# refactor restructuring, no behavior change
+# perf     performance
+# test     tests
+# build    dependencies / packaging
+# ci       GitHub Actions / workflows
+# chore    tooling, config, housekeeping
+# revert   revert a previous commit
+#
+# Scopes (suggested): site utils etl data ci docs <race-name>
