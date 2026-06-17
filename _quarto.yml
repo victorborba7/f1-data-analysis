@@ -31,7 +31,7 @@ website:
 
 format:
   html:
-    theme: [darkly, styles.css]
+    theme: [darkly, styles.scss]
     toc: true
     code-fold: true
     code-tools: true

@@ -1,3 +1,11 @@
+/*-- scss:defaults --*/
+// Bootstrap/theme variable overrides (compiled into the darkly base)
+$primary:    #e8002d;
+$body-bg:    #1a1a2e;
+$body-color: #e8e8ea;
+$link-color: #ff4d6d;
+
+/*-- scss:rules --*/
 /* F1 dark theme — matches the chart background (#1a1a2e) */
 
 :root {
@@ -5,11 +13,6 @@
   --f1-panel: #2a2a3e;
   --f1-red: #e8002d;
   --f1-text: #e8e8ea;
-}
-
-body {
-  background-color: var(--f1-bg);
-  color: var(--f1-text);
 }
 
 .navbar {
@@ -22,9 +25,6 @@ body {
   border-bottom: 3px solid var(--f1-red);
 }
 
-a {
-  color: #ff4d6d;
-}
 a:hover {
   color: var(--f1-red);
 }
