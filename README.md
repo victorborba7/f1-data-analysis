@@ -73,6 +73,12 @@ The polished writeups are published with [Quarto](https://quarto.org) to GitHub 
 3. (Optional) Replace the `YOUR_PROFILE` LinkedIn placeholder in `_quarto.yml` and `about.qmd`
 4. Push — the Action publishes to `https://victorborba7.github.io/f1-data-analysis`
 
+## Development workflow
+
+This repo uses **Git Flow** branching and **Conventional Commits**, enforced by a
+commit-message hook. After cloning, run `./scripts/setup-git.ps1` (or `sh scripts/setup-git.sh`).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full branch model and commit conventions.
+
 ---
 
 Follow my weekly analysis on [LinkedIn](https://www.linkedin.com/in/YOUR_PROFILE)
