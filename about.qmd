@@ -1,0 +1,33 @@
+---
+title: "About"
+# Add a headshot later: drop profile.jpg next to this file and uncomment ↓
+# image: profile.jpg
+about:
+  template: solana
+  links:
+    - icon: github
+      text: GitHub
+      href: https://github.com/victorborba7/f1-data-analysis
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/YOUR_PROFILE
+---
+
+I'm a data engineer / analyst exploring **Formula 1 through data**.
+
+Every race weekend I take the live timing and telemetry from
+[FastF1](https://github.com/theOehrly/Fast-F1) and turn it into a story: where the
+time went, why a strategy worked, and what the numbers say that the broadcast didn't.
+
+## What you'll find here
+
+- **Race breakdowns** — results, lap-time evolution, tyre strategy
+- **Telemetry deep-dives** — corner-by-corner delta analysis between drivers
+- **Pace & degradation models** — true race pace, tyre wear regression
+- **Season pipeline** — a reproducible ETL that tracks the championship as it unfolds
+
+## Stack
+
+`Python` · `FastF1` · `pandas` · `matplotlib` · `Plotly` · `Quarto`
+
+All the code behind these posts lives on [GitHub](https://github.com/victorborba7/f1-data-analysis).

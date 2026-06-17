@@ -1,0 +1,57 @@
+/* F1 dark theme — matches the chart background (#1a1a2e) */
+
+:root {
+  --f1-bg: #1a1a2e;
+  --f1-panel: #2a2a3e;
+  --f1-red: #e8002d;
+  --f1-text: #e8e8ea;
+}
+
+body {
+  background-color: var(--f1-bg);
+  color: var(--f1-text);
+}
+
+.navbar {
+  border-bottom: 3px solid var(--f1-red);
+}
+
+/* Title banner */
+.quarto-title-block .quarto-title-banner {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2a2a3e 100%);
+  border-bottom: 3px solid var(--f1-red);
+}
+
+a {
+  color: #ff4d6d;
+}
+a:hover {
+  color: var(--f1-red);
+}
+
+/* Listing cards */
+.quarto-listing .card {
+  background-color: var(--f1-panel);
+  border: 1px solid #3a3a4e;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.quarto-listing .card:hover {
+  transform: translateY(-3px);
+  border-color: var(--f1-red);
+}
+
+/* Category pills */
+.listing-category {
+  background-color: var(--f1-red) !important;
+  color: white !important;
+}
+
+/* Images */
+img {
+  border-radius: 6px;
+}
+
+/* Code blocks a touch darker than the page */
+div.sourceCode {
+  background-color: #15151f;
+}

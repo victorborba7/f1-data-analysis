@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# FastF1 cache (large binary files, re-downloaded automatically)
+**/f1_cache/
+**/content/f1_cache/
+
+# Generated media (too large for git — store on Google Drive / share link in post)
+*.mp4
+*.avi
+*.gif
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+
+# Claude Code tooling
+.claude/
+
+# Quarto build output (rendered by CI; _freeze/ IS committed)
+/_site/
+.quarto/

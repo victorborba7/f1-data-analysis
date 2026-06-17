@@ -1,0 +1,17 @@
+---
+title: "F1 Data Analysis"
+subtitle: "Weekly Formula 1 race breakdowns — built with Python & FastF1"
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  feed: true
+page-layout: full
+title-block-banner: true
+---
+
+New analysis every race weekend. Each post digs into the telemetry, strategy, and
+pace behind the result — with the code on [GitHub](https://github.com/victorborba7/f1-data-analysis).

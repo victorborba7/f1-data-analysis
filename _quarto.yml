@@ -1,0 +1,43 @@
+project:
+  type: website
+  output-dir: _site
+  # Only render the website files — ignore notebooks in 2026/, examples/, template/
+  render:
+    - index.qmd
+    - about.qmd
+    - posts/
+
+website:
+  title: "Victor Borba · F1 Data Analysis"
+  description: "Weekly Formula 1 race analysis with Python & FastF1"
+  site-url: "https://victorborba7.github.io/f1-data-analysis"
+  navbar:
+    background: dark
+    pinned: true
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+    right:
+      - icon: github
+        href: https://github.com/victorborba7/f1-data-analysis
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://www.linkedin.com/in/YOUR_PROFILE
+        aria-label: LinkedIn
+  page-footer:
+    center: "Built with [Quarto](https://quarto.org) · Data via [FastF1](https://github.com/theOehrly/Fast-F1)"
+
+format:
+  html:
+    theme: [darkly, styles.css]
+    toc: true
+    code-fold: true
+    code-tools: true
+    highlight-style: github
+
+execute:
+  # Use committed results in CI instead of re-running FastF1 downloads.
+  # Run notebooks locally, commit the _freeze/ folder, and the site builds without Python.
+  freeze: auto

@@ -1,0 +1,6 @@
+# Settings applied to every post
+freeze: auto
+author: "Victor Borba"
+title-block-banner: true
+toc: true
+code-fold: true
