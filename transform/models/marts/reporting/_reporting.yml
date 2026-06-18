@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: mart_driver_career
+    description: "Career rollup, one row per driver. Exported to serve/data for the site + Power BI."
+    columns:
+      - name: driver_key
+        tests: [unique, not_null]
+      - name: full_name
+        tests: [not_null]
+      - name: wins
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 200
+      - name: win_rate
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+              row_condition: "win_rate is not null"
+
+  - name: mart_constructor_career
+    description: "Career rollup, one row per constructor."
+    columns:
+      - name: constructor_key
+        tests: [unique, not_null]
+      - name: constructor_name
+        tests: [not_null]
+
+  - name: mart_season_summary
+    description: "One row per season: counts plus crowned driver/constructor champions."
+    columns:
+      - name: season_year
+        tests: [unique, not_null]
+      - name: races
+        tests: [not_null]

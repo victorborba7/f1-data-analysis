@@ -1,0 +1,121 @@
+---
+title: "All-Time Leaders"
+subtitle: "75 years of Formula 1, served from the dbt marts"
+page-layout: full
+execute:
+  warning: false
+---
+
+These tables read directly from the `mart_driver_career`, `mart_constructor_career`
+and `mart_season_summary` marts — the tested, dimensional output of the
+[data pipeline](data-model.qmd), exported to Parquet.
+
+```{python}
+#| label: load
+#| echo: false
+from pathlib import Path
+import pandas as pd
+
+DATA = Path("../data")
+
+def load(name: str) -> pd.DataFrame | None:
+    path = DATA / f"{name}.parquet"
+    return pd.read_parquet(path) if path.exists() else None
+
+drivers = load("mart_driver_career")
+constructors = load("mart_constructor_career")
+seasons = load("mart_season_summary")
+HAVE_DATA = drivers is not None
+```
+
+```{python}
+#| echo: false
+#| output: asis
+if not HAVE_DATA:
+    print(
+        "::: {.callout-note title='Marts not exported yet'}\n"
+        "Run the pipeline to populate this page:\n\n"
+        "```bash\n"
+        "python -m extract.pipeline backfill --seasons 1950:2026\n"
+        "cd transform && dbt build\n"
+        "python -m extract.pipeline export\n"
+        "```\n"
+        ":::"
+    )
+```
+
+## Most race wins
+
+```{python}
+#| echo: false
+if HAVE_DATA:
+    cols = ["full_name", "nationality", "championships", "wins", "podiums",
+            "poles", "race_entries", "career_points"]
+    top_wins = (drivers.sort_values("wins", ascending=False)
+                .head(15)[cols]
+                .reset_index(drop=True))
+    top_wins.index += 1
+    display(top_wins)
+```
+
+```{python}
+#| echo: false
+if HAVE_DATA:
+    import plotly.express as px
+    top10 = drivers.sort_values("wins", ascending=False).head(10)
+    fig = px.bar(
+        top10.sort_values("wins"),
+        x="wins", y="full_name", orientation="h",
+        text="wins", color="championships",
+        color_continuous_scale="Reds",
+        labels={"wins": "Race wins", "full_name": "", "championships": "Titles"},
+        title="Top 10 drivers by race wins",
+    )
+    fig.update_layout(template="plotly_dark", height=480,
+                      paper_bgcolor="#1a1a2e", plot_bgcolor="#1a1a2e")
+    fig
+```
+
+## Most championships
+
+```{python}
+#| echo: false
+if HAVE_DATA:
+    champs = (drivers[drivers["championships"] > 0]
+              .sort_values(["championships", "wins"], ascending=False)
+              .head(15)[["full_name", "nationality", "championships", "wins",
+                         "first_season", "last_season"]]
+              .reset_index(drop=True))
+    champs.index += 1
+    display(champs)
+```
+
+## Constructors — wins & titles
+
+```{python}
+#| echo: false
+if HAVE_DATA:
+    cons = (constructors.sort_values("wins", ascending=False)
+            .head(15)[["constructor_name", "nationality", "championships",
+                       "wins", "poles", "races_entered", "career_points"]]
+            .reset_index(drop=True))
+    cons.index += 1
+    display(cons)
+```
+
+## Champions by season
+
+```{python}
+#| echo: false
+if HAVE_DATA:
+    recent = (seasons.sort_values("season_year", ascending=False)
+              .head(20)[["season_year", "champion_driver", "champion_constructor",
+                         "races", "drivers"]]
+              .reset_index(drop=True))
+    display(recent)
+```
+
+::: {.callout-tip}
+The same marts back a Power BI report — see `serve/powerbi/CONNECTION.md` for the
+live BigQuery connection and the suggested measures and visuals.
+:::
