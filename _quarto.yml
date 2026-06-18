@@ -1,11 +1,13 @@
 project:
   type: website
   output-dir: _site
-  # Only render the website files — ignore notebooks in 2026/, examples/, template/
+  # Only render the website files — ignore notebooks in analysis/, template/
   render:
     - index.qmd
     - about.qmd
     - posts/
+    - serve/quarto/data-model.qmd
+    - serve/quarto/all-time-leaders.qmd
 
 website:
   title: "Victor Borba · F1 Data Analysis"
@@ -17,6 +19,12 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - text: "Data Platform"
+        menu:
+          - href: serve/quarto/data-model.qmd
+            text: "The Data Model"
+          - href: serve/quarto/all-time-leaders.qmd
+            text: "All-Time Leaders"
       - href: about.qmd
         text: About
     right:

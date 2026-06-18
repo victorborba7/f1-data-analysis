@@ -1,0 +1,70 @@
+name: ELT pipeline (refresh marts)
+
+# Runs the full extract -> load -> dbt build -> export against BigQuery, then
+# commits the refreshed serve/data/*.parquet so the published site stays in sync.
+# Requires repo secrets: GCP_PROJECT and GCP_SA_KEY (service-account JSON).
+on:
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "Seasons to load (e.g. 2026, or 1950:2026). Blank = current year."
+        required: false
+        default: ""
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC — the morning after most races
+
+permissions:
+  contents: write
+
+env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  BQ_DATASET_RAW: f1_raw
+  BQ_DATASET_ANALYTICS: f1_analytics
+  BQ_LOCATION: US
+  DBT_TARGET: dev
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-key.json
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install ELT dependencies
+        run: pip install -r requirements-elt.txt
+
+      - name: Write service-account key
+        run: printf '%s' '${{ secrets.GCP_SA_KEY }}' > "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Extract + load to BigQuery
+        run: |
+          SEASONS="${{ github.event.inputs.seasons }}"
+          if [ -z "$SEASONS" ]; then SEASONS="$(date +%Y)"; fi
+          echo "Loading seasons: $SEASONS"
+          python -m extract.pipeline backfill --seasons "$SEASONS" --target bq
+
+      - name: dbt build (run + test)
+        working-directory: transform
+        run: |
+          dbt deps
+          dbt build --profiles-dir .
+
+      - name: Export marts to serve/data
+        run: python -m extract.pipeline export
+
+      - name: Commit refreshed marts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add serve/data/*.parquet
+          if git diff --cached --quiet; then
+            echo "No mart changes to commit."
+          else
+            git commit -m "chore(data): refresh marts [skip ci]"
+            git push
+          fi
