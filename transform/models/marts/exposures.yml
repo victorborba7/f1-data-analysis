@@ -1,0 +1,34 @@
+version: 2
+
+exposures:
+  - name: quarto_all_time_leaders
+    type: dashboard
+    maturity: medium
+    url: https://victorborba7.github.io/f1-data-analysis/serve/quarto/all-time-leaders.html
+    description: >
+      Quarto "All-Time Leaders" page, built from the reporting marts exported to
+      serve/data/*.parquet. Part of the published portfolio site.
+    depends_on:
+      - ref('mart_driver_career')
+      - ref('mart_constructor_career')
+      - ref('mart_season_summary')
+    owner:
+      name: Victor Borba
+      email: victorvb99@gmail.com
+
+  - name: powerbi_f1_analytics
+    type: dashboard
+    maturity: medium
+    description: >
+      Power BI report connecting to the f1_analytics marts (live BigQuery or the
+      serve/data parquet export). See serve/powerbi/CONNECTION.md.
+    depends_on:
+      - ref('fct_race_results')
+      - ref('dim_driver')
+      - ref('dim_constructor')
+      - ref('dim_circuit')
+      - ref('dim_race')
+      - ref('dim_season')
+    owner:
+      name: Victor Borba
+      email: victorvb99@gmail.com

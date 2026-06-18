@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: fct_race_results
+    description: "Central fact — one row per driver per race (the heart of the star schema)."
+    columns:
+      - name: result_key
+        description: Surrogate grain key (season + round + driver).
+        tests: [unique, not_null]
+      - name: race_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_race'), field: race_key}
+      - name: driver_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_driver'), field: driver_key}
+      - name: constructor_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_constructor'), field: constructor_key}
+      - name: circuit_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_circuit'), field: circuit_key}
+      - name: status_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_status'), field: status_key}
+      - name: points
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 50
+              row_condition: "points is not null"
+      - name: grid_position
+        description: 0 denotes a pit-lane start in the source data.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 40
+              row_condition: "grid_position is not null"
+
+  - name: fct_qualifying
+    description: "Qualifying fact — one row per driver per qualifying session."
+    columns:
+      - name: qualifying_key
+        tests: [unique, not_null]
+      - name: race_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_race'), field: race_key}
+      - name: driver_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_driver'), field: driver_key}
+
+  - name: fct_pit_stops
+    description: "Pit-stop fact (2011 onward) — one row per stop."
+    columns:
+      - name: pit_stop_key
+        tests: [unique, not_null]
+      - name: race_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_race'), field: race_key}
+      - name: driver_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_driver'), field: driver_key}
+      - name: duration_seconds
+        tests:
+          # Outliers exist (red-flag stops, long repairs); flag, don't fail.
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 600
+              row_condition: "duration_seconds is not null"
+              config:
+                severity: warn
+
+  - name: fct_driver_standings
+    description: "Final driver-championship standing per season."
+    columns:
+      - name: driver_standing_key
+        tests: [unique, not_null]
+      - name: season_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_season'), field: season_key}
+      - name: driver_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_driver'), field: driver_key}
+
+  - name: fct_constructor_standings
+    description: "Final constructor-championship standing per season (1958 onward)."
+    columns:
+      - name: constructor_standing_key
+        tests: [unique, not_null]
+      - name: season_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_season'), field: season_key}
+      - name: constructor_key
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_constructor'), field: constructor_key}

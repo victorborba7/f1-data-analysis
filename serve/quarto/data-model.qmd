@@ -1,0 +1,79 @@
+---
+title: "The Data Model"
+subtitle: "How raw F1 history becomes a tested, query-ready star schema"
+page-layout: full
+---
+
+This site is the **serve** layer of an end-to-end ELT pipeline. Everything you see
+on the [All-Time Leaders](all-time-leaders.qmd) page is read from dimensional
+marts built and tested with dbt.
+
+## The pipeline
+
+```{mermaid}
+flowchart LR
+    A["Jolpica-F1 API<br/>(Ergast successor)"] -->|"extract/ (Python)"| B["BigQuery<br/>f1_raw"]
+    B -->|"dbt: staging"| C["f1_staging<br/>views + surrogate keys"]
+    C -->|"dbt: intermediate"| D["int_results_enriched"]
+    D -->|"dbt: marts"| E["f1_analytics<br/>star schema"]
+    E -->|"pipeline.py export"| F["serve/data/*.parquet"]
+    F --> G["Quarto site"]
+    E --> H["Power BI"]
+```
+
+**Extract → Load.** A rate-limited, cached Python client pulls the full
+Formula 1 record (1950 onward) from [Jolpica-F1](https://github.com/jolpica/jolpica-f1)
+and lands one raw table per endpoint in BigQuery.
+
+**Transform.** dbt builds three layers — staging (typed, renamed, surrogate-keyed
+views), one intermediate model that resolves keys and derives result flags, and
+the dimensional marts below. Every relationship is tested.
+
+**Serve.** The reporting marts are exported to Parquet for this Quarto site and
+connected live for Power BI.
+
+## The star schema
+
+`fct_race_results` is the central fact (one row per driver per race), surrounded
+by conformed dimensions shared across every fact.
+
+```{mermaid}
+erDiagram
+    DIM_DRIVER      ||--o{ FCT_RACE_RESULTS : driver_key
+    DIM_CONSTRUCTOR ||--o{ FCT_RACE_RESULTS : constructor_key
+    DIM_CIRCUIT     ||--o{ FCT_RACE_RESULTS : circuit_key
+    DIM_RACE        ||--o{ FCT_RACE_RESULTS : race_key
+    DIM_STATUS      ||--o{ FCT_RACE_RESULTS : status_key
+    DIM_SEASON      ||--o{ DIM_RACE : season_key
+    DIM_DRIVER      ||--o{ FCT_QUALIFYING : driver_key
+    DIM_RACE        ||--o{ FCT_QUALIFYING : race_key
+    DIM_DRIVER      ||--o{ FCT_PIT_STOPS : driver_key
+    DIM_RACE        ||--o{ FCT_PIT_STOPS : race_key
+    DIM_DRIVER      ||--o{ FCT_DRIVER_STANDINGS : driver_key
+    DIM_SEASON      ||--o{ FCT_DRIVER_STANDINGS : season_key
+    DIM_CONSTRUCTOR ||--o{ FCT_CONSTRUCTOR_STANDINGS : constructor_key
+    DIM_SEASON      ||--o{ FCT_CONSTRUCTOR_STANDINGS : season_key
+```
+
+| Layer | Models | Materialized as |
+|-------|--------|-----------------|
+| Staging | `stg_jolpica__*` (11) | views in `f1_staging` |
+| Intermediate | `int_results_enriched` | ephemeral |
+| Marts · core | `dim_driver`, `dim_constructor`, `dim_circuit`, `dim_race`, `dim_season`, `dim_status` | tables in `f1_analytics` |
+| Marts · results | `fct_race_results`, `fct_qualifying`, `fct_pit_stops`, `fct_driver_standings`, `fct_constructor_standings` | tables in `f1_analytics` |
+| Marts · reporting | `mart_driver_career`, `mart_constructor_career`, `mart_season_summary` | tables in `f1_analytics` |
+
+## Data quality
+
+Every model is documented and tested in dbt:
+
+- **Keys** — `unique` + `not_null` on every surrogate and natural key.
+- **Referential integrity** — `relationships` tests from each fact's foreign keys
+  back to its dimension.
+- **Domain rules** — `accepted_values` (status groups, season eras), value-range
+  checks (`dbt_expectations`) on points, grid slots, and geo-coordinates.
+- **Business invariants** — singular tests assert each season crowns exactly one
+  champion, and that champion holds the most points.
+
+Run `dbt docs generate` in `transform/` for the full lineage graph, including the
+exposures that tie these marts to this site and the Power BI report.

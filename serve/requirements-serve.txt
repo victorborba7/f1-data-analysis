@@ -1,0 +1,6 @@
+# Minimal deps for rendering the executable serve/ Quarto pages in CI.
+# (The all-time-leaders page reads serve/data/*.parquet and draws a Plotly chart.)
+jupyter>=1.0
+pandas==2.3.3
+pyarrow==24.0.0
+plotly==6.8.0
