@@ -1,57 +1,56 @@
 /*-- scss:defaults --*/
-// Bootstrap/theme variable overrides (compiled into the darkly base)
-$primary:    #e8002d;
-$body-bg:    #1a1a2e;
-$body-color: #e8e8ea;
-$link-color: #ff4d6d;
+// Design tokens — single source of truth in design/tokens.yml.
+// Brings in the $f1-* palette and the Bootstrap overrides ($primary, $body-bg,
+// $body-color, $link-color). Regenerate with: python design/build_tokens.py
+@import "design/generated/tokens";
 
 /*-- scss:rules --*/
-/* F1 dark theme — matches the chart background (#1a1a2e) */
+/* Dark theme — teal accent, slate surfaces (matches the chart background) */
 
 :root {
-  --f1-bg: #1a1a2e;
-  --f1-panel: #2a2a3e;
-  --f1-red: #e8002d;
-  --f1-text: #e8e8ea;
+  --f1-bg:     #{$f1-surface-base};
+  --f1-panel:  #{$f1-surface-raised};
+  --f1-accent: #{$f1-brand-teal};
+  --f1-text:   #{$f1-text-primary};
 }
 
 .navbar {
-  border-bottom: 3px solid var(--f1-red);
+  border-bottom: 3px solid var(--f1-accent);
 }
 
 /* Title banner */
 .quarto-title-block .quarto-title-banner {
-  background: linear-gradient(135deg, #1a1a2e 0%, #2a2a3e 100%);
-  border-bottom: 3px solid var(--f1-red);
+  background: linear-gradient(135deg, #{$f1-surface-base} 0%, #{$f1-surface-raised} 100%);
+  border-bottom: 3px solid var(--f1-accent);
 }
 
 a:hover {
-  color: var(--f1-red);
+  color: var(--f1-accent);
 }
 
 /* Listing cards */
 .quarto-listing .card {
   background-color: var(--f1-panel);
-  border: 1px solid #3a3a4e;
+  border: 1px solid #{$f1-surface-border};
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 .quarto-listing .card:hover {
   transform: translateY(-3px);
-  border-color: var(--f1-red);
+  border-color: var(--f1-accent);
 }
 
 /* Category pills */
 .listing-category {
-  background-color: var(--f1-red) !important;
+  background-color: var(--f1-accent) !important;
   color: white !important;
 }
 
 /* Images */
 img {
-  border-radius: 6px;
+  border-radius: #{$f1-radius-sm};
 }
 
 /* Code blocks a touch darker than the page */
 div.sourceCode {
-  background-color: #15151f;
+  background-color: #{$f1-surface-sunken};
 }

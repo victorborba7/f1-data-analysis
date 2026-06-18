@@ -1,0 +1,94 @@
+# ===========================================================================
+# F1 Analytics — Design Tokens (SINGLE SOURCE OF TRUTH)
+# ---------------------------------------------------------------------------
+# Brand: teal #009382 + slate #333A41 (from the logo). Dark theme.
+# Edit colours / type here, then run:  python design/build_tokens.py
+# That regenerates every downstream artifact under design/generated/:
+#   _tokens.scss  -> Quarto website          (imported by styles.scss)
+#   tokens.py     -> Python / matplotlib      (imported by utils/*.py)
+#   f1.mplstyle   -> matplotlib stylesheet     (applied in setup())
+#   theme.json    -> Power BI custom theme     (View > Themes > Browse)
+# Nothing below feeds anything until you rebuild — this file is the contract.
+# ===========================================================================
+meta:
+  name: "F1 Analytics Design System"
+  version: "2.0.0"
+
+color:
+  # --- Brand (logo teal) -------------------------------------------------
+  brand:
+    teal:        "#009382"   # logo teal — primary accent
+    teal_bright: "#1fc1ac"   # lighter teal for links & hover on dark
+    teal_deep:   "#006b5f"   # darker teal for pressed / depth
+
+  # --- Surfaces (deep slate, layered) -----------------------------------
+  surface:
+    base:    "#15191d"   # page & chart background (deep slate)
+    raised:  "#1e252b"   # panels, cards, legend backgrounds
+    sunken:  "#0f1316"   # code blocks, deepest layer
+    border:  "#333a41"   # logo slate — structural lines & card borders
+    outline: "#2a3137"   # faint full-track outline underneath charts
+
+  # --- Text --------------------------------------------------------------
+  text:
+    primary:  "#e6e9eb"  # body text on dark
+    muted:    "#9aa3aa"  # secondary / neutral benchmark
+    faint:    "#6f7880"  # axis annotations, corner labels
+    on_chart: "#ffffff"  # chart tick & label ink (pure white for contrast)
+
+  # --- Axis furniture (chart greys) -------------------------------------
+  axis:
+    spine:  "#3a444b"   # visible axis spines
+    grid:   "#ffffff"   # gridlines (rendered at low alpha)
+    marker: "#4a555c"   # corner-marker dotted lines
+    zero:   "#5b666e"   # zero / reference lines
+
+  # --- Semantic (direction / outcome) -----------------------------------
+  semantic:
+    positive: "#3fb950" # gain / faster (green, kept distinct from teal)
+    negative: "#e5484d" # loss / slower (refined red)
+    neutral:  "#9aa3aa" # benchmark / reference (slate grey)
+
+  # --- Tyre compounds (FIA convention) ----------------------------------
+  compound:
+    soft:         "#e5484d"
+    medium:       "#ffd700"
+    hard:         "#ebebeb"
+    intermediate: "#3fb950"
+    wet:          "#4a8bdf"
+    unknown:      "#888888"
+
+  # --- Categorical ramp (multi-series charts & Power BI dataColors) ------
+  # Teal family distinguished by lightness, with one gold accent. On-brand;
+  # best for ~5-6 series before the cool tones start to blur.
+  data:
+    - "#009382"   # teal (brand)
+    - "#2bb6a3"   # mint-teal
+    - "#1f7a8c"   # deep teal-blue
+    - "#4f9bd0"   # sky blue
+    - "#6f7880"   # slate grey
+    - "#3fb07a"   # sea green
+    - "#8aa0c0"   # slate-blue
+    - "#d6a63f"   # gold (pop)
+
+typography:
+  family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+  weight:
+    normal: 400
+    bold:   700
+  # chart font sizes (pt)
+  size:
+    title:      14
+    subtitle:   13
+    axis_label: 11
+    tick:       10
+    legend:     9
+    annotation: 8
+
+chart:
+  fig_dpi:    150
+  line_width: 1.6
+  grid_alpha: 0.15
+
+radius:
+  sm: "6px"

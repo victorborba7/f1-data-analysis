@@ -1,0 +1,120 @@
+{
+  "name": "F1 Analytics Design System",
+  "dataColors": [
+    "#009382",
+    "#2bb6a3",
+    "#1f7a8c",
+    "#4f9bd0",
+    "#6f7880",
+    "#3fb07a",
+    "#8aa0c0",
+    "#d6a63f"
+  ],
+  "background": "#15191d",
+  "foreground": "#e6e9eb",
+  "tableAccent": "#009382",
+  "good": "#3fb950",
+  "neutral": "#ffd700",
+  "bad": "#e5484d",
+  "maximum": "#009382",
+  "center": "#ffd700",
+  "minimum": "#15191d",
+  "null": "#6f7880",
+  "hyperlink": "#1fc1ac",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#1e252b"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "color": {
+              "solid": {
+                "color": "#333a41"
+              }
+            },
+            "radius": 6,
+            "show": true
+          }
+        ],
+        "title": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#e6e9eb"
+              }
+            },
+            "background": {
+              "solid": {
+                "color": "#1e252b"
+              }
+            },
+            "fontFamily": "Inter",
+            "fontSize": 13
+          }
+        ],
+        "labels": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#e6e9eb"
+              }
+            },
+            "fontFamily": "Inter",
+            "fontSize": 9
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#9aa3aa"
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": "#3a444b"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": {
+              "solid": {
+                "color": "#9aa3aa"
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": "#3a444b"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#15191d"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    }
+  }
+}
