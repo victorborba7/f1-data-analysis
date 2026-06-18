@@ -1,0 +1,45 @@
+name: "f1_analytics"
+version: "1.0.0"
+config-version: 2
+
+profile: "f1_analytics"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Raw data lands in `f1_raw` (loaded by extract/). dbt builds two more datasets:
+# staging/intermediate views in `f1_staging`, and the dimensional marts in
+# `f1_analytics`. See macros/generate_schema_name.sql — custom schemas are used
+# verbatim (not prefixed with the target dataset).
+models:
+  f1_analytics:
+    staging:
+      +materialized: view
+      +schema: f1_staging
+    intermediate:
+      +materialized: ephemeral
+      +schema: f1_staging
+    marts:
+      +materialized: table
+      +schema: f1_analytics
+      core:
+        +tags: ["core", "dimensions"]
+      results:
+        +tags: ["results", "facts"]
+      reporting:
+        +tags: ["reporting", "serve"]
+
+seeds:
+  f1_analytics:
+    +schema: f1_staging
+    seed_status_group:
+      +column_types:
+        status: string
+        status_group: string

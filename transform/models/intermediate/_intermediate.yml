@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: int_results_enriched
+    description: >
+      Race results resolved to surrogate keys (circuit + date joined from the
+      race) with the boolean flags and ordering reused across marts. Ephemeral:
+      it compiles into the models that select from it, so it carries no tests of
+      its own — those live on fct_race_results.

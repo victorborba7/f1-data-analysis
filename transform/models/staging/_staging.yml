@@ -1,0 +1,96 @@
+version: 2
+
+models:
+  - name: stg_jolpica__seasons
+    description: One row per championship season, with a surrogate season_key.
+    columns:
+      - name: season_key
+        tests: [unique, not_null]
+      - name: season_year
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__circuits
+    description: One row per circuit ever used in the championship.
+    columns:
+      - name: circuit_key
+        tests: [unique, not_null]
+      - name: circuit_id
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__drivers
+    description: One row per driver who has entered a championship event.
+    columns:
+      - name: driver_key
+        tests: [unique, not_null]
+      - name: driver_id
+        tests: [unique, not_null]
+      - name: full_name
+        tests: [not_null]
+
+  - name: stg_jolpica__constructors
+    description: One row per constructor (team).
+    columns:
+      - name: constructor_key
+        tests: [unique, not_null]
+      - name: constructor_id
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__status
+    description: Finishing-status lookup with historical occurrence counts.
+    columns:
+      - name: status_key
+        tests: [unique, not_null]
+      - name: status_text
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__races
+    description: One row per championship race (event), 1950 onward.
+    columns:
+      - name: race_key
+        tests: [unique, not_null]
+      - name: circuit_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_jolpica__circuits')
+              field: circuit_key
+      - name: season_year
+        tests: [not_null]
+      - name: round_number
+        tests: [not_null]
+
+  - name: stg_jolpica__results
+    description: One row per driver per race result.
+    columns:
+      - name: result_key
+        tests: [unique, not_null]
+      - name: race_key
+        tests: [not_null]
+      - name: driver_key
+        tests: [not_null]
+      - name: constructor_key
+        tests: [not_null]
+
+  - name: stg_jolpica__qualifying
+    description: One row per driver per qualifying session (1994 onward).
+    columns:
+      - name: qualifying_key
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__pit_stops
+    description: One row per pit stop (2011 onward).
+    columns:
+      - name: pit_stop_key
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__driver_standings
+    description: Final driver standings per season.
+    columns:
+      - name: driver_standing_key
+        tests: [unique, not_null]
+
+  - name: stg_jolpica__constructor_standings
+    description: Final constructor standings per season (1958 onward).
+    columns:
+      - name: constructor_standing_key
+        tests: [unique, not_null]
