@@ -4,7 +4,7 @@
 PY ?= python
 SEASONS ?= 1950:
 
-.PHONY: backfill refresh build test docs export preview all
+.PHONY: backfill refresh build test docs export tokens preview all
 
 backfill: ; $(PY) tasks.py backfill $(SEASONS)
 refresh:  ; $(PY) tasks.py refresh
@@ -12,5 +12,6 @@ build:    ; $(PY) tasks.py build
 test:     ; $(PY) tasks.py test
 docs:     ; $(PY) tasks.py docs
 export:   ; $(PY) tasks.py export
+tokens:   ; $(PY) tasks.py tokens
 preview:  ; $(PY) tasks.py preview
 all:      ; $(PY) tasks.py all $(SEASONS)

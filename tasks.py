@@ -8,6 +8,7 @@ Cross-platform task runner for the F1 ELT pipeline (works on Windows + POSIX).
     python tasks.py test                  # dbt test only
     python tasks.py docs                  # dbt docs generate
     python tasks.py export                # marts -> serve/data/*.parquet
+    python tasks.py tokens                # rebuild design tokens -> all surfaces
     python tasks.py preview               # quarto preview the site
     python tasks.py all 1950:2026         # backfill -> build -> docs -> export
 
@@ -75,6 +76,10 @@ def export() -> None:
     run([sys.executable, "-m", "extract.pipeline", "export"])
 
 
+def tokens() -> None:
+    run([sys.executable, str(ROOT / "design" / "build_tokens.py")])
+
+
 def preview() -> None:
     run(["quarto", "preview"], cwd=ROOT)
 
@@ -93,6 +98,7 @@ TASKS = {
     "test": test,
     "docs": docs,
     "export": export,
+    "tokens": tokens,
     "preview": preview,
     "all": all_,
 }
