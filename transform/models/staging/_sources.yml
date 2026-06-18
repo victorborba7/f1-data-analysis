@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: f1_raw
+    description: >
+      Raw Formula 1 history landed by the extract/ layer from the Jolpica-F1 API
+      (the Ergast successor). One table per endpoint; columns are flattened but
+      otherwise faithful to the source. All modelling happens downstream.
+    database: "{{ env_var('GCP_PROJECT', '') }}"
+    schema: "{{ env_var('BQ_DATASET_RAW', 'f1_raw') }}"
+    tables:
+      - name: seasons
+      - name: circuits
+      - name: drivers
+      - name: constructors
+      - name: status
+      - name: races
+        description: One row per championship race in history (1950 onward).
+      - name: results
+        description: One row per driver per race finish.
+      - name: qualifying
+      - name: pit_stops
+        description: One row per pit stop (2011 onward).
+      - name: driver_standings
+        description: Final driver championship standings per season.
+      - name: constructor_standings
+        description: Final constructor championship standings per season.

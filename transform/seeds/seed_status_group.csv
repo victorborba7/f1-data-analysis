@@ -1,0 +1,72 @@
+status,status_group
+Finished,Finished
+Disqualified,Disqualified
+Excluded,Disqualified
+Accident,Collision
+Collision,Collision
+Collision damage,Collision
+Spun off,Collision
+Damage,Collision
+Debris,Collision
+Engine,Mechanical
+Engine fire,Mechanical
+Engine misfire,Mechanical
+Blown engine,Mechanical
+Gearbox,Mechanical
+Transmission,Mechanical
+Clutch,Mechanical
+Hydraulics,Mechanical
+Electrical,Mechanical
+Electronics,Mechanical
+Ignition,Mechanical
+Battery,Mechanical
+Suspension,Mechanical
+Front suspension,Mechanical
+Rear suspension,Mechanical
+Brakes,Mechanical
+Differential,Mechanical
+Overheating,Mechanical
+Cooling system,Mechanical
+Mechanical,Mechanical
+Tyre,Mechanical
+Puncture,Mechanical
+Driveshaft,Mechanical
+Halfshaft,Mechanical
+Wheel,Mechanical
+Wheel bearing,Mechanical
+Wheel nut,Mechanical
+Throttle,Mechanical
+Steering,Mechanical
+Technical,Mechanical
+Exhaust,Mechanical
+Oil leak,Mechanical
+Oil pressure,Mechanical
+Oil line,Mechanical
+Water leak,Mechanical
+Water pressure,Mechanical
+Radiator,Mechanical
+Power loss,Mechanical
+Power Unit,Mechanical
+Vibrations,Mechanical
+Turbo,Mechanical
+Pneumatics,Mechanical
+Fuel pressure,Mechanical
+Fuel system,Mechanical
+Fuel pump,Mechanical
+Fuel leak,Mechanical
+Out of fuel,Mechanical
+Fire,Mechanical
+Rear wing,Mechanical
+Front wing,Mechanical
+Wing,Mechanical
+Withdrew,Did Not Start
+Did not qualify,Did Not Start
+Did not prequalify,Did Not Start
+Injured,Did Not Start
+Injury,Did Not Start
+Illness,Did Not Start
+Driver unwell,Did Not Start
+107% Rule,Did Not Start
+Not classified,Not Classified
+Retired,Other
+Safety,Other

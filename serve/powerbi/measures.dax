@@ -1,0 +1,38 @@
+// Core measures for the F1 Power BI report.
+// Create a blank table named "_Measures" and paste these in (one measure each).
+// They assume the star-schema relationships described in CONNECTION.md.
+
+Wins = CALCULATE ( COUNTROWS ( fct_race_results ), fct_race_results[is_win] = TRUE )
+
+Podiums = CALCULATE ( COUNTROWS ( fct_race_results ), fct_race_results[is_podium] = TRUE )
+
+Poles = CALCULATE ( COUNTROWS ( fct_race_results ), fct_race_results[is_pole] = TRUE )
+
+Race Entries = COUNTROWS ( fct_race_results )
+
+Points = SUM ( fct_race_results[points] )
+
+DNFs = CALCULATE ( COUNTROWS ( fct_race_results ), fct_race_results[is_dnf] = TRUE )
+
+Win Rate =
+DIVIDE ( [Wins], [Race Entries] )
+
+Finish Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( fct_race_results ), fct_race_results[is_dnf] = FALSE ),
+    [Race Entries]
+)
+
+// Driver championships (counts seasons a selected driver finished P1).
+Championships =
+CALCULATE (
+    COUNTROWS ( fct_driver_standings ),
+    fct_driver_standings[is_champion] = TRUE
+)
+
+// Average pit-stop time (seconds) — uses the pit-stop fact (2011+).
+Avg Pit Stop (s) = AVERAGE ( fct_pit_stops[duration_seconds] )
+
+// Best qualifying gap to pole within the current race context (seconds).
+Pole Time (s) =
+MINX ( fct_qualifying, fct_qualifying[best_qualifying_seconds] )

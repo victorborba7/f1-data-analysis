@@ -1,0 +1,94 @@
+version: 2
+
+models:
+  - name: dim_driver
+    description: "Driver dimension — one row per driver, descriptive attributes only."
+    columns:
+      - name: driver_key
+        description: Surrogate key (hash of driver_id).
+        tests: [unique, not_null]
+      - name: driver_id
+        description: Natural key from the source (e.g. 'max_verstappen').
+        tests: [unique, not_null]
+      - name: full_name
+        tests: [not_null]
+
+  - name: dim_constructor
+    description: "Constructor (team) dimension."
+    columns:
+      - name: constructor_key
+        tests: [unique, not_null]
+      - name: constructor_id
+        tests: [unique, not_null]
+      - name: constructor_name
+        tests: [not_null]
+
+  - name: dim_circuit
+    description: "Circuit dimension, including geo coordinates."
+    columns:
+      - name: circuit_key
+        tests: [unique, not_null]
+      - name: circuit_id
+        tests: [unique, not_null]
+      - name: latitude
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -90
+              max_value: 90
+              row_condition: "latitude is not null"
+      - name: longitude
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: -180
+              max_value: 180
+              row_condition: "longitude is not null"
+
+  - name: dim_season
+    description: "Season dimension with decade and era bucketing."
+    columns:
+      - name: season_key
+        tests: [unique, not_null]
+      - name: season_year
+        tests: [unique, not_null]
+      - name: era
+        tests:
+          - accepted_values:
+              values:
+                ["Early (1950–1979)", "Turbo & V10 (1980–1999)",
+                 "V8/V10 modern (2000–2013)", "Hybrid era (2014–)"]
+
+  - name: dim_race
+    description: "Event dimension — one row per race, with denormalised circuit attributes."
+    columns:
+      - name: race_key
+        tests: [unique, not_null]
+      - name: season_key
+        description: FK to dim_season.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_season')
+              field: season_key
+      - name: circuit_key
+        description: FK to dim_circuit.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_circuit')
+              field: circuit_key
+
+  - name: dim_status
+    description: "Finishing-status dimension, grouped via the seed_status_group lookup."
+    columns:
+      - name: status_key
+        tests: [unique, not_null]
+      - name: status_text
+        tests: [unique, not_null]
+      - name: status_group
+        description: Coarse grouping for analysis (Finished / Lapped / DNF buckets).
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                ["Finished", "Lapped", "Collision", "Mechanical",
+                 "Disqualified", "Did Not Start", "Not Classified", "Other"]
