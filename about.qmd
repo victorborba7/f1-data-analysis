@@ -10,7 +10,7 @@ about:
       href: https://github.com/victorborba7/f1-data-analysis
     - icon: linkedin
       text: LinkedIn
-      href: https://www.linkedin.com/in/YOUR_PROFILE
+      href: https://www.linkedin.com/in/victor-vasconcellos-borba/
 ---
 
 I'm a data engineer / analyst exploring **Formula 1 through data**.

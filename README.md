@@ -140,4 +140,4 @@ After cloning, run `./scripts/setup-git.ps1` (or `sh scripts/setup-git.sh`). See
 
 ---
 
-Follow the weekly analysis on [LinkedIn](https://www.linkedin.com/in/YOUR_PROFILE).
+Follow the weekly analysis on [LinkedIn](https://www.linkedin.com/in/victor-vasconcellos-borba/).

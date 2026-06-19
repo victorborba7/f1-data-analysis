@@ -32,7 +32,7 @@ website:
         href: https://github.com/victorborba7/f1-data-analysis
         aria-label: GitHub
       - icon: linkedin
-        href: https://www.linkedin.com/in/YOUR_PROFILE
+        href: https://www.linkedin.com/in/victor-vasconcellos-borba/
         aria-label: LinkedIn
   page-footer:
     center: "Built with [Quarto](https://quarto.org) · Data via [FastF1](https://github.com/theOehrly/Fast-F1)"
