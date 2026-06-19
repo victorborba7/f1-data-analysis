@@ -26,9 +26,18 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      # Posts use committed results (freeze) or static images, so no Python
-      # execution is needed here. If you add an executable post, render it
-      # locally first and commit the _freeze/ folder.
+      # Weekly posts use committed freeze/static images, but the serve/ pages
+      # execute Python (reading the committed serve/data/*.parquet marts). Set up
+      # a slim Python so `quarto render` can run them deterministically — no
+      # network, no BigQuery, just the committed Parquet.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install serve render dependencies
+        run: pip install -r serve/requirements-serve.txt
+
       - name: Render site
         run: quarto render
 

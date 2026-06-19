@@ -1,7 +1,14 @@
 """
 Reusable helpers for F1 data analysis with FastF1.
+
+Colours and the chart theme come from the design system (single source of
+truth: design/tokens.yml). Edit there and run `python design/build_tokens.py`
+to regenerate; never hard-code a hex in this module.
 """
 import os
+import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -12,11 +19,22 @@ import fastf1
 import fastf1.plotting
 import fastf1.utils
 
+# Make the repo root importable so `design.generated.tokens` resolves even when
+# this module is imported from a notebook deep in analysis/.
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+from design.generated import tokens as T  # noqa: E402
+
+# Re-exported so `from utils.f1_helpers import COMPOUND_COLORS` still works.
+COMPOUND_COLORS = T.COMPOUND_COLORS
+
 
 def setup(cache_path: str = "content/f1_cache") -> None:
     os.makedirs(cache_path, exist_ok=True)
     fastf1.Cache.enable_cache(cache_path)
     fastf1.plotting.setup_mpl(color_scheme="fastf1")
+    plt.style.use(T.MPLSTYLE)  # F1 design-system chart theme (over fastf1's)
 
 
 def ensure_assets_dir(assets_path: str = "assets") -> str:
@@ -24,7 +42,7 @@ def ensure_assets_dir(assets_path: str = "assets") -> str:
     return assets_path
 
 
-def save_fig(fig: plt.Figure, filename: str, assets_path: str = "assets", dpi: int = 150) -> str:
+def save_fig(fig: plt.Figure, filename: str, assets_path: str = "assets", dpi: int = T.FIG_DPI) -> str:
     path = os.path.join(assets_path, filename)
     fig.savefig(path, dpi=dpi, bbox_inches="tight", facecolor=fig.get_facecolor())
     print(f"Saved → {path}")
@@ -48,8 +66,8 @@ def plot_race_results(session, assets_path: str = "assets") -> plt.Figure:
     top10 = results.head(10)
 
     fig, ax = plt.subplots(figsize=(12, 6))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     colors = [
         fastf1.plotting.get_team_color(team, session=session)
@@ -99,8 +117,8 @@ def plot_lap_times(session, drivers: list[str] | None = None,
         driver_abbrs = drivers
 
     fig, ax = plt.subplots(figsize=(14, 6))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for drv in driver_abbrs:
         drv_laps = laps.pick_driver(drv)
@@ -114,9 +132,9 @@ def plot_lap_times(session, drivers: list[str] | None = None,
     ax.set_ylabel("Lap Time (s)", color="white", fontsize=11)
     ax.tick_params(colors="white")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color("#444")
+    ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
     ax.grid(alpha=0.15, color="white")
-    ax.legend(facecolor="#2a2a3e", labelcolor="white", fontsize=9)
+    ax.legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=9)
     ax.set_title(
         f"{session.event['EventName']} {session.event.year} — Lap Time Evolution",
         color="white", fontsize=14, fontweight="bold", pad=12
@@ -131,16 +149,6 @@ def plot_lap_times(session, drivers: list[str] | None = None,
 # Tyre strategy
 # ---------------------------------------------------------------------------
 
-COMPOUND_COLORS = {
-    "SOFT": "#e8002d",
-    "MEDIUM": "#ffd700",
-    "HARD": "#ebebeb",
-    "INTERMEDIATE": "#43b02a",
-    "WET": "#0067ff",
-    "UNKNOWN": "#888888",
-}
-
-
 def plot_tyre_strategy(session, assets_path: str = "assets") -> plt.Figure:
     laps = session.laps
     results = get_race_results(session)
@@ -151,8 +159,8 @@ def plot_tyre_strategy(session, assets_path: str = "assets") -> plt.Figure:
     ]
 
     fig, ax = plt.subplots(figsize=(14, 7))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for i, drv in enumerate(abbrs):
         drv_laps = laps.pick_driver(drv)[["LapNumber", "Compound", "Stint"]].dropna()
@@ -173,7 +181,7 @@ def plot_tyre_strategy(session, assets_path: str = "assets") -> plt.Figure:
     legend_patches = [
         mpatches.Patch(color=v, label=k) for k, v in COMPOUND_COLORS.items() if k != "UNKNOWN"
     ]
-    ax.legend(handles=legend_patches, facecolor="#2a2a3e", labelcolor="white",
+    ax.legend(handles=legend_patches, facecolor=T.SURFACE_RAISED, labelcolor="white",
               fontsize=9, loc="lower right")
 
     plt.tight_layout()
@@ -206,7 +214,7 @@ def plot_telemetry(session, driver1: str, driver2: str,
     ]
 
     fig, axes = plt.subplots(len(channels), 1, figsize=(14, 12), sharex=True)
-    fig.patch.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
 
     t1_s = lap1["LapTime"].total_seconds()
     t2_s = lap2["LapTime"].total_seconds()
@@ -219,7 +227,7 @@ def plot_telemetry(session, driver1: str, driver2: str,
     )
 
     for ax, (ch, ylabel, ylim) in zip(axes, channels):
-        ax.set_facecolor("#1a1a2e")
+        ax.set_facecolor(T.SURFACE_BASE)
         if ch in tel1.columns:
             ax.plot(tel1["Distance"], tel1[ch], color=color1, label=driver1, linewidth=1.4)
         if ch in tel2.columns:
@@ -229,10 +237,10 @@ def plot_telemetry(session, driver1: str, driver2: str,
         ax.set_ylim(ylim)
         ax.tick_params(colors="white")
         ax.spines[["top", "right"]].set_visible(False)
-        ax.spines[["left", "bottom"]].set_color("#444")
+        ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
         ax.grid(alpha=0.12, color="white")
 
-    axes[0].legend(facecolor="#2a2a3e", labelcolor="white", fontsize=9, loc="upper right")
+    axes[0].legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=9, loc="upper right")
     axes[-1].set_xlabel("Distance (m)", color="white", fontsize=11)
     axes[-1].tick_params(axis="x", colors="white")
 
@@ -271,8 +279,8 @@ def plot_qualifying_times(session, top_n: int = 15, assets_path: str = "assets")
     pole_time = df["LapTime"].iloc[0]
 
     fig, ax = plt.subplots(figsize=(12, 7))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     colors = [fastf1.plotting.get_team_color(t, session=session) for t in df["Team"]]
     bars = ax.barh(range(len(df)), df["Delta"], color=colors, height=0.65)
@@ -331,14 +339,14 @@ def plot_sector_times(session, top_n: int = 10, assets_path: str = "assets") -> 
     best = {s: df[s].min() for s in sectors}
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 6))
-    fig.patch.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
     fig.suptitle(
         f"{session.event['EventName']} {session.event.year} — Best Sector Times (Top {top_n})",
         color="white", fontsize=13, fontweight="bold"
     )
 
     for ax, s, label in zip(axes, sectors, sector_labels):
-        ax.set_facecolor("#1a1a2e")
+        ax.set_facecolor(T.SURFACE_BASE)
         df_s = df[["Driver", "Team", s]].dropna().sort_values(s)
         colors = [fastf1.plotting.get_team_color(t, session=session) for t in df_s["Team"]]
         df_s["Delta"] = df_s[s] - best[s]
@@ -375,8 +383,8 @@ def plot_positions_gained(race_session, assets_path: str = "assets") -> plt.Figu
     results = results.sort_values("GridPosition").reset_index(drop=True)
 
     fig, ax = plt.subplots(figsize=(10, 9))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for _, row in results.iterrows():
         color = fastf1.plotting.get_team_color(row["TeamName"], session=race_session)
@@ -391,7 +399,7 @@ def plot_positions_gained(race_session, assets_path: str = "assets") -> plt.Figu
         ax.text(-0.02, row["GridPosition"], label_left, ha="right", va="center",
                 color="white", fontsize=8)
         ax.text(1.02, row["Position"], label_right + gained_str, ha="left", va="center",
-                color=("#43b02a" if gained > 0 else "#e8002d" if gained < 0 else "white"),
+                color=(T.SEMANTIC_POSITIVE if gained > 0 else T.SEMANTIC_NEGATIVE if gained < 0 else "white"),
                 fontsize=8)
 
     ax.set_xlim(-0.3, 1.3)
@@ -406,9 +414,9 @@ def plot_positions_gained(race_session, assets_path: str = "assets") -> plt.Figu
         color="white", fontsize=13, fontweight="bold", pad=14
     )
 
-    gain_line = mlines.Line2D([], [], color="#43b02a", label="Positions gained")
-    loss_line = mlines.Line2D([], [], color="#e8002d", label="Positions lost")
-    ax.legend(handles=[gain_line, loss_line], facecolor="#2a2a3e", labelcolor="white",
+    gain_line = mlines.Line2D([], [], color=T.SEMANTIC_POSITIVE, label="Positions gained")
+    loss_line = mlines.Line2D([], [], color=T.SEMANTIC_NEGATIVE, label="Positions lost")
+    ax.legend(handles=[gain_line, loss_line], facecolor=T.SURFACE_RAISED, labelcolor="white",
               fontsize=9, loc="lower center")
 
     plt.tight_layout()
@@ -423,8 +431,8 @@ def plot_pace_comparison(sessions: dict, drivers: list[str],
     sessions = {'Q': quali_session, 'R': race_session} (or add 'S' for Sprint)
     """
     fig, ax = plt.subplots(figsize=(12, 6))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     session_labels = list(sessions.keys())
     x = np.arange(len(session_labels))
@@ -445,9 +453,9 @@ def plot_pace_comparison(sessions: dict, drivers: list[str],
     ax.set_ylabel("Median Lap Time (s)", color="white", fontsize=11)
     ax.tick_params(colors="white")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color("#444")
+    ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
     ax.grid(axis="y", alpha=0.15, color="white")
-    ax.legend(facecolor="#2a2a3e", labelcolor="white", fontsize=9)
+    ax.legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=9)
     ax.set_title(
         f"{ref_session.event['EventName']} {ref_session.event.year} — Pace Across Sessions",
         color="white", fontsize=13, fontweight="bold", pad=12
@@ -543,10 +551,10 @@ def plot_delta_trace(session, analysis: dict, lap_ref, lap_comp,
     dist, delta = analysis["dist"], analysis["delta"]
     ref_name, comp_name = analysis["ref_name"], analysis["comp_name"]
 
-    ref_color = "#9aa0a6"  # benchmark = neutral grey
+    ref_color = T.SEMANTIC_NEUTRAL  # benchmark = neutral grey
     comp_color = fastf1.plotting.get_driver_color(comp_name, session=session)
-    if comp_color.lower() in ("#9aa0a6",):
-        comp_color = "#e8002d"
+    if comp_color.lower() in (T.SEMANTIC_NEUTRAL,):
+        comp_color = T.SEMANTIC_NEGATIVE
 
     corners = session.get_circuit_info().corners.sort_values("Distance")
 
@@ -554,7 +562,7 @@ def plot_delta_trace(session, analysis: dict, lap_ref, lap_comp,
         2, 1, figsize=(15, 9), sharex=True,
         gridspec_kw={"height_ratios": [2, 1.4], "hspace": 0.08}
     )
-    fig.patch.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
 
     t_ref = lap_ref["LapTime"].total_seconds()
     t_comp = lap_comp["LapTime"].total_seconds()
@@ -567,22 +575,22 @@ def plot_delta_trace(session, analysis: dict, lap_ref, lap_comp,
     )
 
     # --- Speed traces ---
-    ax_s.set_facecolor("#1a1a2e")
+    ax_s.set_facecolor(T.SURFACE_BASE)
     ax_s.plot(ref["Distance"], ref["Speed"], color=ref_color, linewidth=1.6,
               label=f"{ref_name} (ref)")
     ax_s.plot(comp["Distance"], comp["Speed"], color=comp_color, linewidth=1.6,
               linestyle="--", label=f"{comp_name}")
     ax_s.set_ylabel("Speed (km/h)", color="white", fontsize=11)
-    ax_s.legend(facecolor="#2a2a3e", labelcolor="white", fontsize=9, loc="lower right")
+    ax_s.legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=9, loc="lower right")
 
     # --- Delta curve ---
-    ax_d.set_facecolor("#1a1a2e")
+    ax_d.set_facecolor(T.SURFACE_BASE)
     ax_d.plot(dist, delta, color="white", linewidth=1.6)
-    ax_d.axhline(0, color="#666", linewidth=0.8)
+    ax_d.axhline(0, color=T.AXIS_ZERO, linewidth=0.8)
     # shade where COMPARE is losing (delta rising) vs gaining
-    ax_d.fill_between(dist, delta, 0, where=(delta > 0), color="#e8002d", alpha=0.25,
+    ax_d.fill_between(dist, delta, 0, where=(delta > 0), color=T.SEMANTIC_NEGATIVE, alpha=0.25,
                       interpolate=True)
-    ax_d.fill_between(dist, delta, 0, where=(delta <= 0), color="#43b02a", alpha=0.25,
+    ax_d.fill_between(dist, delta, 0, where=(delta <= 0), color=T.SEMANTIC_POSITIVE, alpha=0.25,
                       interpolate=True)
     ax_d.set_ylabel(f"Δt (s)\n← {comp_name} ahead | behind →", color="white", fontsize=10)
     ax_d.set_xlabel("Distance (m)", color="white", fontsize=11)
@@ -590,16 +598,16 @@ def plot_delta_trace(session, analysis: dict, lap_ref, lap_comp,
     # --- Corner markers on both axes ---
     for ax in (ax_s, ax_d):
         for _, c in corners.iterrows():
-            ax.axvline(c["Distance"], color="#555", linewidth=0.6, linestyle=":", zorder=0)
+            ax.axvline(c["Distance"], color=T.AXIS_MARKER, linewidth=0.6, linestyle=":", zorder=0)
         ax.tick_params(colors="white")
         ax.spines[["top", "right"]].set_visible(False)
-        ax.spines[["left", "bottom"]].set_color("#444")
+        ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
         ax.grid(alpha=0.10, color="white")
 
     ymax = ax_s.get_ylim()[1]
     for _, c in corners.iterrows():
         ax_s.text(c["Distance"], ymax * 0.99, _corner_label(c),
-                  color="#888", fontsize=7, ha="center", va="top", rotation=90)
+                  color=T.TEXT_FAINT, fontsize=7, ha="center", va="top", rotation=90)
 
     save_fig(fig, f"C1_delta_trace_{ref_name}_vs_{comp_name}.png", assets_path)
     return fig
@@ -612,16 +620,16 @@ def plot_corner_breakdown(session, analysis: dict,
     ref_name, comp_name = analysis["ref_name"], analysis["comp_name"]
 
     fig, ax = plt.subplots(figsize=(11, max(6, len(df) * 0.4)))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
-    colors = ["#e8002d" if v > 0 else "#43b02a" for v in df["TimeLost"]]
+    colors = [T.SEMANTIC_NEGATIVE if v > 0 else T.SEMANTIC_POSITIVE for v in df["TimeLost"]]
     ax.barh(range(len(df)), df["TimeLost"], color=colors, height=0.7)
 
     ax.set_yticks(range(len(df)))
     ax.set_yticklabels(df["Corner"], color="white", fontsize=9)
     ax.invert_yaxis()
-    ax.axvline(0, color="#666", linewidth=0.8)
+    ax.axvline(0, color=T.AXIS_ZERO, linewidth=0.8)
     ax.set_xlabel(f"Time lost by {comp_name} vs {ref_name}  (s)   "
                   f"→ losing | gaining ←", color="white", fontsize=10)
     ax.tick_params(colors="white")
@@ -680,8 +688,8 @@ def plot_race_pace(session, top_n: int = 10, assets_path: str = "assets") -> plt
     colors = [colors[i] for i in order]
 
     fig, ax = plt.subplots(figsize=(13, 7))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     bp = ax.boxplot(data, vert=False, patch_artist=True, showfliers=False,
                     widths=0.6)
@@ -699,7 +707,7 @@ def plot_race_pace(session, top_n: int = 10, assets_path: str = "assets") -> plt
     ax.set_xlabel("Lap Time (s)", color="white", fontsize=11)
     ax.tick_params(colors="white")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color("#444")
+    ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
     ax.grid(axis="x", alpha=0.15, color="white")
     ax.set_title(
         f"{session.event['EventName']} {session.event.year} — Race Pace Distribution\n"
@@ -752,8 +760,8 @@ def plot_tyre_degradation(session, min_laps: int = 8,
     laps["LapTimeSeconds"] = laps["LapTime"].dt.total_seconds()
 
     fig, ax = plt.subplots(figsize=(13, 7))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for comp, color in COMPOUND_COLORS.items():
         if comp == "UNKNOWN":
@@ -775,9 +783,9 @@ def plot_tyre_degradation(session, min_laps: int = 8,
     ax.set_ylabel("Lap Time (s)", color="white", fontsize=11)
     ax.tick_params(colors="white")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color("#444")
+    ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
     ax.grid(alpha=0.15, color="white")
-    ax.legend(facecolor="#2a2a3e", labelcolor="white", fontsize=10, title="Degradation")
+    ax.legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=10, title="Degradation")
     ax.get_legend().get_title().set_color("white")
     ax.set_title(
         f"{session.event['EventName']} {session.event.year} — Tyre Degradation by Compound",
@@ -851,11 +859,11 @@ def plot_track_dominance(session, drivers: list[str] | None = None,
     seg_colors = [color_map[d] for d in ref["FastestDriver"].iloc[:-1]]
 
     fig, ax = plt.subplots(figsize=(10, 9))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     # faint full-track outline underneath
-    ax.plot(xy[:, 0], xy[:, 1], color="#333", linewidth=8, zorder=1)
+    ax.plot(xy[:, 0], xy[:, 1], color=T.SURFACE_OUTLINE, linewidth=8, zorder=1)
     lc = LineCollection(segments, colors=seg_colors, linewidth=5, zorder=2)
     ax.add_collection(lc)
 
@@ -869,7 +877,7 @@ def plot_track_dominance(session, drivers: list[str] | None = None,
 
     handles = [mlines.Line2D([], [], color=color_map[d], linewidth=4, label=d)
                for d in drivers]
-    ax.legend(handles=handles, facecolor="#2a2a3e", labelcolor="white",
+    ax.legend(handles=handles, facecolor=T.SURFACE_RAISED, labelcolor="white",
               fontsize=10, loc="upper right")
 
     plt.tight_layout()

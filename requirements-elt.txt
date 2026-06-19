@@ -1,0 +1,17 @@
+# ELT stack: extract/load + dbt transform. Install alongside requirements.txt
+# (the FastF1 analysis deps) — or on its own for a CI pipeline run.
+#
+#   pip install -r requirements-elt.txt
+#
+# Pins reflect the versions this project was built and validated against.
+
+# Extract / Load
+requests>=2.31,<3
+pandas==2.3.3
+pyarrow==24.0.0
+google-cloud-bigquery==3.42.0
+pandas-gbq==0.35.0
+db-dtypes==1.7.0
+
+# Transform
+dbt-bigquery==1.11.1

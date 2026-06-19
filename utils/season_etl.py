@@ -12,7 +12,8 @@ import matplotlib.pyplot as plt
 import fastf1
 import fastf1.plotting
 
-from .f1_helpers import save_fig
+from .f1_helpers import save_fig  # also puts the repo root on sys.path
+from design.generated import tokens as T  # design-system palette
 
 
 # ---------------------------------------------------------------------------
@@ -136,8 +137,8 @@ def plot_championship_progression(df: pd.DataFrame, top_n: int = 8,
     drv_team = df.drop_duplicates("Driver").set_index("Driver")["Team"].to_dict()
 
     fig, ax = plt.subplots(figsize=(13, 7))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for drv in leaders:
         try:
@@ -151,9 +152,9 @@ def plot_championship_progression(df: pd.DataFrame, top_n: int = 8,
     ax.set_ylabel("Cumulative Points", color="white", fontsize=11)
     ax.tick_params(colors="white")
     ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color("#444")
+    ax.spines[["left", "bottom"]].set_color(T.AXIS_SPINE)
     ax.grid(alpha=0.15, color="white")
-    ax.legend(facecolor="#2a2a3e", labelcolor="white", fontsize=9, loc="upper left")
+    ax.legend(facecolor=T.SURFACE_RAISED, labelcolor="white", fontsize=9, loc="upper left")
     year = int(df["Year"].iloc[0])
     ax.set_title(f"{year} Drivers' Championship — Points Progression",
                  color="white", fontsize=14, fontweight="bold", pad=12)
@@ -208,14 +209,14 @@ def plot_teammate_battles(battles: pd.DataFrame, session=None,
                           assets_path: str = "assets") -> plt.Figure:
     """Diverging bars: race head-to-head wins per team (D1 left, D2 right)."""
     fig, ax = plt.subplots(figsize=(12, max(6, len(battles) * 0.7)))
-    fig.patch.set_facecolor("#1a1a2e")
-    ax.set_facecolor("#1a1a2e")
+    fig.patch.set_facecolor(T.SURFACE_BASE)
+    ax.set_facecolor(T.SURFACE_BASE)
 
     for i, (_, row) in enumerate(battles.iterrows()):
         try:
             color = fastf1.plotting.get_team_color(row["Team"], session=session)
         except Exception:
-            color = "#888"
+            color = T.TEXT_FAINT
         ax.barh(i, -row["Race_D1"], color=color, alpha=0.9, height=0.6)
         ax.barh(i, row["Race_D2"], color=color, alpha=0.5, height=0.6)
         ax.text(-row["Race_D1"] - 0.15, i, f"{row['Driver1']} {row['Race_D1']}",

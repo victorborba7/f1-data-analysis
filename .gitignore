@@ -29,6 +29,23 @@ Thumbs.db
 
 # Secrets
 .env
+# Service-account keys / GCP credentials — NEVER commit
+*-sa.json
+*service-account*.json
+gcp-key*.json
+
+# ELT: raw API response cache + local parquet staging (regenerable)
+extract/.cache/
+extract/.stage/
+
+# dbt build artifacts (target = compiled SQL + run results; packages = installed deps)
+transform/target/
+transform/dbt_packages/
+transform/logs/
+transform/.user.yml
+# dbt parses profiles.yml from env vars, so the committed copy is safe; a local
+# override with real secrets is not — ignore it.
+transform/profiles.local.yml
 
 # Claude Code tooling
 .claude/
